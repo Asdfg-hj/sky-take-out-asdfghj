@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.sky.SkyApplication",
+      "args": "",
+      "console": "internalConsole",
+      "vmArgs": "-Xms256m -Xmx512m"
+    }
+  ]
+}
