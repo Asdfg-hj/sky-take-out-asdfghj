@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -105,8 +106,26 @@ public class EmployeeController {
             log.info("分页查询员工,参数为：{}",employeePageQueryDTO);
             PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
             return Result.success(pageResult);
-
+ 
         }
+
+        /**
+         * 启用禁用员工账号
+         * @param status
+         * @param id
+         * @return
+         */
+        @PostMapping("/status/{status}")//status 是路径参数,id是地址栏传参
+        @ApiOperation("启用禁用员工账号")
+        public Result<?> startOrStop(@PathVariable Integer status,Long id) {
+
+            log.info("启用禁用员工账号：{},{}",status,id);
+            
+            employeeService.startOrStop(status, id);
+            
+            return Result.success();
+        }
+        
 
 
 }
