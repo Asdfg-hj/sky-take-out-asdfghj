@@ -31,12 +31,10 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final EmployeeController employeeController;
     @Autowired
     private EmployeeMapper employeeMapper;
 
     EmployeeServiceImpl(EmployeeController employeeController) {
-        this.employeeController = employeeController;
     }
 
     /**
@@ -133,6 +131,34 @@ public class EmployeeServiceImpl implements EmployeeService {
         LocalDateTime updateTime = LocalDateTime.now();
         employee.setUpdateTime(updateTime);
 
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee selectById(Long id) {
+        
+        Employee employee = employeeMapper.selectById(id);
+        employee.setPassword("******");
+        return employee;
+    }
+    /**
+     * 编辑员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+
+        //对象的属性拷贝,将employeeDTO 转换为employee类型,方便使用update()
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee); 
+        employee.setUpdateTime(LocalDateTime.now());
+        //获取修改人的id 
+        employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.update(employee);
     }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+
 @Data
 public class CategoryDTO implements Serializable {
 
@@ -18,5 +19,6 @@ public class CategoryDTO implements Serializable {
 
     //排序
     private Integer sort;
+
 
 }
