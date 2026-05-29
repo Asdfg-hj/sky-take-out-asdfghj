@@ -37,7 +37,7 @@ public class DishController {
      */
     @PostMapping
     @ApiOperation("新增菜品")
-    public Result save(@RequestBody DishDTO dishDTO){
+    public Result<?> save(@RequestBody DishDTO dishDTO){
 
         log.info("新增菜品,{}",dishDTO);
         dishService.saveWithFlavor(dishDTO);
@@ -66,7 +66,7 @@ public class DishController {
     @DeleteMapping
     @ApiOperation("删除菜品")
     //@RequestParam  解析传过来的字符串,并封装在ids内
-    public Result delete(@RequestParam List<Long> ids){
+    public Result<?> delete(@RequestParam List<Long> ids){
 
         log.info("菜品的批量删除,{}",ids);
         dishService.deleteBatch(ids);
