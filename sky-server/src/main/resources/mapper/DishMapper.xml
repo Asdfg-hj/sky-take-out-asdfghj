@@ -46,19 +46,42 @@
          where id = #{id}
     </update>
 
-    <select id="listByCategoryId" resultType="Dish" parameterType="Dish">
-        select * from dish
+    <resultMap id="dishVOMap" type="com.sky.vo.DishVO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="price" column="price"/>
+        <result property="image" column="image"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="categoryName" column="categoryName"/>
+        <collection property="flavors" ofType="com.sky.entity.DishFlavor">
+            <id property="id" column="flavor_id"/>
+            <result property="dishId" column="flavor_dish_id"/>
+            <result property="name" column="flavor_name"/>
+            <result property="value" column="flavor_value"/>
+        </collection>
+    </resultMap>
+
+    <select id="listWithFlavor" resultMap="dishVOMap" parameterType="com.sky.entity.Dish">
+        select d.*, c.name as categoryName,
+               df.id as flavor_id, df.dish_id as flavor_dish_id,
+               df.name as flavor_name, df.value as flavor_value
+        from dish d
+        left outer join category c on d.category_id = c.id
+        left join dish_flavor df on d.id = df.dish_id
         <where>
             <if test="name != null">
-                and name like concat('%',#{name},'%')
+                and d.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
-                and category_id = #{categoryId}
+                and d.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and d.status = #{status}
             </if>
         </where>
-        order by create_time desc
+        order by d.create_time desc
     </select>
 </mapper>

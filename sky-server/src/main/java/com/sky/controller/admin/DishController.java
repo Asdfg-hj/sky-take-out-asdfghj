@@ -1,8 +1,10 @@
 package com.sky.controller.admin;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +37,8 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
+    @Autowired
+    private RedisTemplate<String, List<DishVO>> redisTemplate;
 
     /**
      * 新增菜品
@@ -47,6 +51,8 @@ public class DishController {
 
         log.info("新增菜品,{}",dishDTO);
         dishService.saveWithFlavor(dishDTO);
+        //清理redis中菜品数据,因为新增了菜品,所以之前的缓存数据就过期了,要清理掉
+        cleanCache("dish_*");
         return Result.success();
     }
     /**
@@ -70,12 +76,14 @@ public class DishController {
      * @return
      */
     @DeleteMapping
-    @ApiOperation("删除菜品")
+    @ApiOperation("批量删除菜品")
     //@RequestParam  解析传过来的字符串,并封装在ids内
     public Result<?> delete(@RequestParam List<Long> ids){
 
         log.info("菜品的批量删除,{}",ids);
         dishService.deleteBatch(ids);
+        //将所有的菜品缓存数据清理掉
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -103,6 +111,8 @@ public class DishController {
     public Result<?> update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品,{}",dishDTO);
         dishService.updateWithFlavor(dishDTO);
+        //清理redis中菜品数据,因为修改了菜品,所以之前的缓存数据就过期了,要清理掉
+        cleanCache("dish_*");
         return Result.success();
 
 
@@ -114,9 +124,20 @@ public class DishController {
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
-    public Result<List<Dish>> list(Long categoryId){
+    public Result<List<DishVO>> list(Long categoryId){
+        //构造redis的key,格式为: dish_分类id
+        String key = "dish_" + categoryId;
+        //查询reids中是否有数据 
+        // 频繁访问数据库会导致性能问题,所以先查询redis，用到了缓存
+        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
+        // 如果有直接返回
+        if(list != null && list.size() > 0){
+            return Result.success(list);
+        }
+        // 如果没有，再查询数据库,并将数据存入redis
         log.info("根据分类id查询菜品,{}",categoryId);
-        List<Dish> list = dishService.listByCategoryId(categoryId);
+        list = dishService.listWithFlavor(categoryId);
+        redisTemplate.opsForValue().set(key, list);
         return Result.success(list);
     }
 
@@ -124,7 +145,16 @@ public class DishController {
     @ApiOperation("启用禁用菜品")
     public Result<?> startOrStop(@PathVariable Integer status, Long id) {
     dishService.startOrStop(status, id);
+    //清理redis中菜品数据,因为修改了菜品状态,所以之前的缓存数据就过期了,要清理掉
+    cleanCache("dish_*");
     return Result.success();
-}
-
+    }
+    /**
+     * 清理redis中菜品数据
+      * @param pattern
+     */
+    private void cleanCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
+    }
 }

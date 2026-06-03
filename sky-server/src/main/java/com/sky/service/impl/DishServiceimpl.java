@@ -179,12 +179,12 @@ public class DishServiceimpl implements DishService{
      * @return
      */
      @Override
-     public List<Dish> listByCategoryId(Long categoryId) {
+     public List<DishVO> listWithFlavor(Long categoryId) {
         
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
         dish.setStatus(StatusConstant.ENABLE);
-        return dishMapper.listByCategoryId(dish);
+        return dishMapper.listWithFlavor(dish);
         
      }
      /**

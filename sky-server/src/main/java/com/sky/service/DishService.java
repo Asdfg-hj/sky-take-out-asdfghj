@@ -49,7 +49,7 @@ public interface DishService {
      * @param dishDTO
      * @return
      */
-    public List<Dish> listByCategoryId(Long categoryId);
+    public List<DishVO> listWithFlavor(Long categoryId);
     /**
      * 启用禁用菜品
      * @param status

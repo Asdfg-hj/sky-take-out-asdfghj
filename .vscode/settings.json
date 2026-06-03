@@ -1,0 +1,13 @@
+{
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-1.8",
+      "path": "D:/JDK_java_download/jdk1.8.0_144",
+      "default": true
+    }
+  ],
+  "maven.executable.path": "E:/develop_maven/apache-maven-3.6.1/bin/mvn",
+  "java.import.maven.enableAutoImport": true,
+  "java.import.gradle.enabled": false,
+  "java.errors.incompleteClasspath.severity": "warning"
+}
