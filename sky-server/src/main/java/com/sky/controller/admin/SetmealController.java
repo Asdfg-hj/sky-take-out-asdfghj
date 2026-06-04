@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ public class SetmealController {
      */
     @PostMapping
     @ApiOperation("新增套餐")
+    @CacheEvict(value = "setmealCache",key = "#setmealDTO.categoryId") //清除套餐缓存setmealCache::100
     public Result save(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐,{}",setmealDTO);
         setmealService.saveWithDish(setmealDTO);
@@ -68,6 +70,7 @@ public class SetmealController {
      */
     @DeleteMapping
     @ApiOperation("批量删除套餐")
+    @CacheEvict(value = "setmealCache",allEntries = true) //清除所有套餐缓存
     public Result delete(@RequestParam List<Long> ids){
         log.info("删除套餐,{}",ids);
         setmealService.deleteBatch(ids);
@@ -80,6 +83,7 @@ public class SetmealController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("启售停售套餐")
+    @CacheEvict(value = "setmealCache",allEntries = true) //清除套餐缓存
     public Result startOrStop(@PathVariable Integer status,Long id){
         log.info("启售停售套餐,{}",status,id);
         setmealService.startOrStop(status,id);
@@ -106,6 +110,7 @@ public class SetmealController {
      */
     @PutMapping
     @ApiOperation("修改套餐")
+    @CacheEvict(value = "setmealCache",allEntries = true) //清除套餐缓存
     public Result update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐,{}",setmealDTO);
         setmealService.update(setmealDTO);

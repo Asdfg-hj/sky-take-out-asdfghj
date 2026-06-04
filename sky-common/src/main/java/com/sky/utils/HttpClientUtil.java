@@ -1,6 +1,7 @@
 package com.sky.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -25,7 +26,14 @@ import java.util.Map;
  */
 public class HttpClientUtil {
 
-    static final  int TIMEOUT_MSEC = 5 * 1000;
+    static final int TIMEOUT_MSEC = 5 * 1000;
+    static final HttpHost PROXY = new HttpHost("127.0.0.1", 7897);
+
+    private static CloseableHttpClient createHttpClient() {
+        return HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom().setProxy(PROXY).build())
+                .build();
+    }
 
     /**
      * 发送GET方式请求
@@ -35,7 +43,7 @@ public class HttpClientUtil {
      */
     public static String doGet(String url,Map<String,String> paramMap){
         // 创建Httpclient对象
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = createHttpClient();
 
         String result = "";
         CloseableHttpResponse response = null;
@@ -82,7 +90,7 @@ public class HttpClientUtil {
      */
     public static String doPost(String url, Map<String, String> paramMap) throws IOException {
         // 创建Httpclient对象
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = createHttpClient();
         CloseableHttpResponse response = null;
         String resultString = "";
 
@@ -129,7 +137,7 @@ public class HttpClientUtil {
      */
     public static String doPost4Json(String url, Map<String, String> paramMap) throws IOException {
         // 创建Httpclient对象
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = createHttpClient();
         CloseableHttpResponse response = null;
         String resultString = "";
 
