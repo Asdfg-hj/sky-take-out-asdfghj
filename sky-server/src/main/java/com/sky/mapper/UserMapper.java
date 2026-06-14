@@ -22,4 +22,7 @@ public interface UserMapper {
     //插入用户数据后需要返回主键id，所以不能用注解方式，需要使用xml
     void insert(User user);
 
+    @Select("select * from user where id = #{id}")
+    User getById(Long userId);
+
 }

@@ -2,6 +2,11 @@ server:
   port: 8080
 
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
   profiles:
     active: dev
   main:
@@ -44,6 +49,10 @@ sky:
     user-secret-key: itheima
     user-ttl: 72000000000 
     user-token-name: authentication
+  shop:
+    address: 北京市海淀区上地十街10号
+  baidu:
+    ak: OQRWKRgJ1OMuPIeMPkmQymwRqkFjxNnq
   alioss:
     endpoint: ${sky.alioss.endpoint}
     access-key-id: ${sky.alioss.access-key-id}
