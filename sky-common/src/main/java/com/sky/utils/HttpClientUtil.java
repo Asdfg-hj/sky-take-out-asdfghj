@@ -59,6 +59,7 @@ public class HttpClientUtil {
 
             //创建GET请求
             HttpGet httpGet = new HttpGet(uri);
+            httpGet.setConfig(RequestConfig.custom().setProxy(PROXY).build());
 
             //发送请求
             response = httpClient.execute(httpGet);

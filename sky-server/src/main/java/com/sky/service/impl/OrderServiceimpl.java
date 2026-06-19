@@ -153,12 +153,12 @@ public class OrderServiceimpl implements OrderService {
         if(addressBook == null){
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
-        //校验用户的收货地址是否超出配送范围
-        checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
+        //校验用户的收货地址是否超出配送范围（开发阶段跳过）
+        // checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
         //判断购物车数据是否为空(购物车)，如果为空则抛出一个异常，提示用户请先添加购物车数据
         Long useId = BaseContext.getCurrentId();
         ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setId(useId);
+        shoppingCart.setUserId(useId);
         List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
         if(shoppingCartList == null || shoppingCartList.size() == 0){
             throw new ShoppingCartBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);

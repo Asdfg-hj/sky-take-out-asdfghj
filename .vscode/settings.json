@@ -9,5 +9,6 @@
   "maven.executable.path": "E:/develop_maven/apache-maven-3.6.1/bin/mvn",
   "java.import.maven.enableAutoImport": true,
   "java.import.gradle.enabled": false,
-  "java.errors.incompleteClasspath.severity": "warning"
+  "java.errors.incompleteClasspath.severity": "warning",
+  "java.compile.nullAnalysis.mode": "disabled"
 }
