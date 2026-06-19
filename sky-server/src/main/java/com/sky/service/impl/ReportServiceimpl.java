@@ -137,10 +137,10 @@ public class ReportServiceimpl implements ReportService{
             Map<String, Object> map = new HashMap<>();
             map.put("begin", beginTime);
             map.put("end", endTime);
-            Integer orderCount = orderMapper.orderByMap(map);
+            Integer orderCount = orderMapper.countByMap(map);
             orderCountList.add(orderCount);
             map.put("status", Orders.COMPLETED);
-            Integer validOrderCount = orderMapper.orderByMap(map);
+            Integer validOrderCount = orderMapper.countByMap(map);
             validOrderCountList.add(validOrderCount);
         }
         //计算时间区间内的订单总数

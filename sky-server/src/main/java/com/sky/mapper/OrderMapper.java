@@ -73,7 +73,7 @@ public interface OrderMapper {
      * @param map
      * @return
      */
-    Integer orderByMap(Map<String,Object> map);
+    Integer countByMap(Map<String,Object> map);
     /**
      * 统计指定时间区间内的销量排行top10
      * @param begin
