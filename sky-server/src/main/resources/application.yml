@@ -32,6 +32,7 @@ mybatis:
 
 logging:
   level:
+    com.alibaba.druid.pool: WARN
     com:
       sky:
         mapper: debug
@@ -66,6 +67,6 @@ sky:
     secret: ${sky.wechat.secret}
 deepseek:
   api:
-    key: sk-5a6beda189604d968ec7d218dbefe9dc
-    url: https://api.deepseek.com/v1/chat/completions
+    key: ${deepseek.api.key}
+    url: ${deepseek.api.url}
     
