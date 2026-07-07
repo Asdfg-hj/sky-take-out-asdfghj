@@ -16,16 +16,18 @@ import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
-
+import com.sky.service.AiService;  
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -38,7 +40,11 @@ public class DishServiceimpl implements DishService{
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
-
+    @Autowired
+    private AiService aiService;                  // ← 新增：注入 AI 服务
+    @Autowired
+    private CategoryMapper categoryMapper;   // ← 新增：需要查分类名
+    
      /**
      * 新增菜品  向菜品表插入数据并且向口味表里添加数据
      * @param dishDTO
@@ -55,7 +61,35 @@ public class DishServiceimpl implements DishService{
         dish.setUpdateTime(LocalDateTime.now());
         dish.setUpdateUser(BaseContext.getCurrentId());
         dish.setCreateUser(BaseContext.getCurrentId());
-        
+        // ========== 🆕 新增：如果描述为空，调用 AI 生成 ==========
+        if (dish.getDescription() == null || dish.getDescription().trim().isEmpty()) {
+            try {
+                // 1. 根据分类 ID 查分类名
+                String categoryName = "中式"; // 默认值
+                if (dish.getCategoryId() != null) {
+                    Category category = categoryMapper.getById(dish.getCategoryId());
+                    if (category != null) {
+                        categoryName = category.getName();
+                    }
+                }
+                
+                // 2. 调用 AI 生成描述
+                String aiDescription = aiService.generateDishDescription(
+                        dish.getName(),
+                        categoryName
+                );
+                
+                // 3. 设置到 dish 对象
+                dish.setDescription(aiDescription);
+                log.info("AI 生成描述成功：{} → {}", dish.getName(), aiDescription);
+                
+            } catch (Exception e) {
+                // AI 调用失败不影响主流程，记录日志即可
+                log.error("AI 生成描述失败，使用空描述", e);
+                dish.setDescription(""); // 或者保持原样
+            }
+        }
+        // ========================================================
         dishMapper.insert(dish);
         //获取insert语句生成的主键值
         Long dishId = dish.getId();;

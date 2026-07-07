@@ -37,6 +37,9 @@ logging:
         mapper: debug
         service: info
         controller: info
+    org.springframework.boot.autoconfigure: ERROR
+    org.springframework.boot.context.embedded: ERROR
+    org.springframework.boot: ERROR
 
 sky:
   jwt:
@@ -61,6 +64,8 @@ sky:
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
+deepseek:
+  api:
+    key: sk-5a6beda189604d968ec7d218dbefe9dc
+    url: https://api.deepseek.com/v1/chat/completions
     
-
-
