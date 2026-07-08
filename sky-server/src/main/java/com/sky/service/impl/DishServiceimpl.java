@@ -27,8 +27,10 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
-import com.sky.service.AiService;  
+import com.sky.service.AiService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -73,13 +75,22 @@ public class DishServiceimpl implements DishService{
                     }
                 }
                 
-                // 2. 调用 AI 生成描述
+                // 2. 获取口味信息
+                String flavorInfo = "";
+                if (dishDTO.getFlavors() != null && !dishDTO.getFlavors().isEmpty()) {
+                    flavorInfo = dishDTO.getFlavors().stream()
+                            .map(f -> f.getName() + "可选（" + f.getValue() + "）")
+                            .collect(Collectors.joining("、"));
+                }
+
+                // 3. 调用 AI 生成描述
                 String aiDescription = aiService.generateDishDescription(
                         dish.getName(),
-                        categoryName
+                        categoryName,
+                        flavorInfo
                 );
                 
-                // 3. 设置到 dish 对象
+                // 4. 设置到 dish 对象
                 dish.setDescription(aiDescription);
                 log.info("AI 生成描述成功：{} → {}", dish.getName(), aiDescription);
                 

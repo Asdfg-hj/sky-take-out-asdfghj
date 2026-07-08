@@ -25,15 +25,38 @@ public class AiServiceimpl implements AiService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String generateDishDescription(String dishName, String categoryName) {
+    public String generateDishDescription(String dishName, String categoryName, String flavorInfo) {
         // 1. 构建 Prompt
         String systemPrompt = "你是一个专业的美食文案写手，擅长用生动、诱人的语言描述菜品。";
+        StringBuilder promptBuilder = new StringBuilder();
+        promptBuilder.append(String.format("请为一道名为【%s】的%s菜品生成一段50字左右的诱人描述。", dishName, categoryName));
+        if (flavorInfo != null && !flavorInfo.trim().isEmpty()) {
+            promptBuilder.append(String.format("菜品属性：%s。", flavorInfo));
+        }
+        promptBuilder.append("要求：结合属性突出口味特点，让人看了就想吃。只返回描述内容，不要加其他废话。");
+        String userPrompt = promptBuilder.toString();
+
+        return callAiApi(dishName, systemPrompt, userPrompt);
+    }
+
+    @Override
+    public String generateSetmealDescription(String setmealName, String categoryName, String dishListInfo) {
+        // 1. 构建 Prompt
+        String systemPrompt = "你是一个专业的美食文案写手，擅长用生动、诱人的语言描述套餐。";
         String userPrompt = String.format(
-                "请为一道名为【%s】的%s菜品生成一段50字左右的诱人描述。" +
-                "要求：突出口味特点，让人看了就想吃。只返回描述内容，不要加其他废话。",
-                dishName, categoryName
+                "请为一份名为【%s】的套餐（分类：%s）生成一段50字左右的诱人描述。" +
+                "套餐包含：%s。" +
+                "要求：突出套餐的搭配优势和整体吸引力，让人看了就想下单。只返回描述内容，不要加其他废话。",
+                setmealName, categoryName, dishListInfo
         );
 
+        return callAiApi(setmealName, systemPrompt, userPrompt);
+    }
+
+    /**
+     * 调用 DeepSeek API 的通用方法
+     */
+    private String callAiApi(String name, String systemPrompt, String userPrompt) {
         // 2. 构建请求体
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "deepseek-chat");
@@ -63,7 +86,7 @@ public class AiServiceimpl implements AiService {
 
         // 4. 发送请求
         try {
-            log.info("调用 DeepSeek API，生成菜品描述：{}", dishName);
+            log.info("调用 DeepSeek API，生成描述：{}", name);
             ResponseEntity<String> response = restTemplate.exchange(
                     apiUrl,
                     HttpMethod.POST,

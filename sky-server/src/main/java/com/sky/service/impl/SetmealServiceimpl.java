@@ -16,15 +16,18 @@ import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Category;
 import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetmealEnableFailedException;
+import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.service.AiService;
 import com.sky.service.SetmealService;
 import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
@@ -41,6 +44,10 @@ public class SetmealServiceimpl implements SetmealService{
     private SetmealDishMapper setmealDishMapper;
     @Autowired
     private DishMapper dishMapper;
+    @Autowired
+    private AiService aiService;
+    @Autowired
+    private CategoryMapper categoryMapper;
     /**
      * 新增套餐,同时需要保存套餐和菜品的关联关系
      */
@@ -56,6 +63,43 @@ public class SetmealServiceimpl implements SetmealService{
         setmeal.setUpdateTime(LocalDateTime.now());
         setmeal.setUpdateUser(BaseContext.getCurrentId());
         setmeal.setCreateUser(BaseContext.getCurrentId());
+
+        // 如果描述为空，调用 AI 生成
+        if (setmeal.getDescription() == null || setmeal.getDescription().trim().isEmpty()) {
+            try {
+                // 1. 查分类名
+                String categoryName = "中式";
+                if (setmeal.getCategoryId() != null) {
+                    Category category = categoryMapper.getById(setmeal.getCategoryId());
+                    if (category != null) {
+                        categoryName = category.getName();
+                    }
+                }
+
+                // 2. 构建套餐内菜品列表信息
+                String dishListInfo = "";
+                List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+                if (setmealDishes != null && !setmealDishes.isEmpty()) {
+                    dishListInfo = setmealDishes.stream()
+                            .map(d -> d.getName() + " x" + d.getCopies())
+                            .collect(java.util.stream.Collectors.joining("、"));
+                }
+
+                // 3. 调用 AI 生成描述
+                String aiDescription = aiService.generateSetmealDescription(
+                        setmeal.getName(),
+                        categoryName,
+                        dishListInfo
+                );
+
+                setmeal.setDescription(aiDescription);
+                log.info("AI 生成套餐描述成功：{} → {}", setmeal.getName(), aiDescription);
+
+            } catch (Exception e) {
+                log.error("AI 生成套餐描述失败，使用空描述", e);
+                setmeal.setDescription("");
+            }
+        }
 
         setmealMapper.insert(setmeal);
 
