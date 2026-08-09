@@ -2,7 +2,7 @@
   "java.configuration.runtimes": [
     {
       "name": "JavaSE-1.8",
-      "path": "D:/JDK_java_download/jdk1.8.0_144",
+      "path": "D:/c_application/JDK_java/jdk1.8.0_144",
       "default": true
     }
   ],
@@ -10,5 +10,6 @@
   "java.import.maven.enableAutoImport": true,
   "java.import.gradle.enabled": false,
   "java.errors.incompleteClasspath.severity": "warning",
-  "java.compile.nullAnalysis.mode": "disabled"
+  "java.compile.nullAnalysis.mode": "disabled",
+  "typescript.tsdk": "web-sky-admin/node_modules/typescript/lib"
 }

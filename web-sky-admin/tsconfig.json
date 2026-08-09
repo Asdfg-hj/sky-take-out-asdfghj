@@ -12,7 +12,6 @@
     "sourceMap": true,
     "baseUrl": ".",
     "skipLibCheck":true,
-    "ignoreDeprecations": "6.0",
     "types": [
       "node",
       "jest",
@@ -27,7 +26,7 @@
       "esnext",
       "dom",
       "dom.iterable",
-      "ScriptHost"
+      "scripthost"
     ]
   },
   "include": [

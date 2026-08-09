@@ -9,6 +9,9 @@
                :inline="true"
                label-width="180px"
                class="demo-ruleForm">
+        <div style="margin-bottom: 20px">
+          <el-button type="danger" @click="generateAiDescription">【测试】AI生成描述 - 置顶</el-button>
+        </div>
         <div>
           <el-form-item label="菜品名称:"
                         prop="name">
@@ -99,13 +102,7 @@
                       :rows="3"
                       maxlength="200"
                       placeholder="菜品描述，最长200字" />
-            <el-button :loading="aiGenerating"
-                       type="warning"
-                       size="small"
-                       style="margin-top: 10px"
-                       @click="generateAiDescription">
-              AI生成描述
-            </el-button>
+            <el-button type="warning" size="small" style="margin-top: 10px" @click="generateAiDescription">AI生成描述</el-button>
           </el-form-item>
         </div>
         <div class="subBox address">
